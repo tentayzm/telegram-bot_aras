@@ -7,8 +7,12 @@ load_dotenv()
 # Bot token
 TOKEN = os.getenv("TOKEN", "8390278484:AAEZYoEIn76BkAuXUlo2pGql8ieniWA8Mko")
 
-# Admin user ID
-ADMIN_ID = int(os.getenv("ADMIN_ID", "7186801471"))
+# ========== پشتیبانی از چند آیدی ادمین (با کاما جدا شده) ==========
+ADMIN_IDS_STR = os.getenv("ADMIN_IDS", os.getenv("ADMIN_ID", "7186801471"))
+ADMIN_IDS = [int(x.strip()) for x in ADMIN_IDS_STR.split(",")]
+# برای سازگاری با کدهای قدیمی که از ADMIN_ID استفاده می‌کنن
+ADMIN_ID = ADMIN_IDS[0] if ADMIN_IDS else None
+# ===================================================================
 
 # Database configuration
 DB_FILE = "bot_database.db"
@@ -279,7 +283,6 @@ MESSAGE_TEMPLATES = {
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["calendar"]} *تاریخ:* {{date}} | {GLASS_DESIGN["clock"]} *ساعت:* {{time}}
 {GLASS_DESIGN["footer"]}
 """,
-    # New message templates
     "currency": f"""
 {GLASS_DESIGN["header"]}
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["money"]} *نرخ ارز و طلا در بازار آزاد* {GLASS_DESIGN["chart"]}
@@ -309,7 +312,6 @@ MESSAGE_TEMPLATES = {
 {{content}}
 {GLASS_DESIGN["footer"]}
 """,
-    # اضافه کردن قالب جدید برای پیام اخطار اسپم
     "spam_warning": f"""
 {GLASS_DESIGN["header"]}
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["warning"]} *اخطار* {GLASS_DESIGN["bell"]}
@@ -322,7 +324,6 @@ MESSAGE_TEMPLATES = {
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["clock"]} *ساعت:* {{time}}
 {GLASS_DESIGN["footer"]}
 """,
-    # اضافه کردن قالب جدید برای پیام بی‌صدا کردن بعد از 3 اخطار
     "mute_after_warns": f"""
 {GLASS_DESIGN["header"]}
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["mute"]} *کاربر به دلیل دریافت 3 اخطار بی‌صدا شد* {GLASS_DESIGN["key"]}
@@ -335,7 +336,6 @@ MESSAGE_TEMPLATES = {
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["clock"]} *ساعت:* {{time}}
 {GLASS_DESIGN["footer"]}
 """,
-    # اضافه کردن قالب جدید برای نمایش اطلاعات کاربر
     "user_info": f"""
 {GLASS_DESIGN["header"]}
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["sparkle"]} <b>اطلاعات کاربر</b> {GLASS_DESIGN["gem"]}
@@ -352,4 +352,4 @@ MESSAGE_TEMPLATES = {
 {GLASS_DESIGN["side"]} {GLASS_DESIGN["calendar"]} <b>تاریخ:</b> {{date}} | {GLASS_DESIGN["clock"]} <b>ساعت:</b> {{time}}
 {GLASS_DESIGN["footer"]}
 """
-} 
+}
