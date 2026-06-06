@@ -4,6 +4,8 @@
 import logging
 import time
 import threading
+import asyncio
+from aiohttp import web
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler, ConversationHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ParseMode
 from telegram.error import BadRequest, Unauthorized, TelegramError
@@ -12,6 +14,22 @@ from database import Database
 from filters import MessageFilters
 from handlers import BotHandlers
 
+# ========== وب سرور برای Health Check (Render) ==========
+async def health_check(request):
+    return web.Response(text="OK")
+
+async def start_health_server():
+    app = web.Application()
+    app.router.add_get('/health', health_check)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    site = web.TCPSite(runner, '0.0.0.0', 10000)
+    await site.start()
+    print("✅ Health check server started on port 10000")
+
+def run_health_server():
+    asyncio.run(start_health_server())
+# =======================================================
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -45,6 +63,10 @@ def main():
 {GLASS_DESIGN["footer"]}
     """)
     
+    # استارت سرور Health Check در یک نخ جداگانه
+    health_thread = threading.Thread(target=run_health_server, daemon=True)
+    health_thread.start()
+    
     updater = Updater(TOKEN, use_context=True, workers=8)
     dp = updater.dispatcher
     
@@ -70,4 +92,4 @@ def main():
 
 if __name__ == '__main__':
     print("bot is start")
-    main() 
+    main()
